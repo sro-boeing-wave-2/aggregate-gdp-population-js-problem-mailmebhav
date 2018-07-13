@@ -3,10 +3,10 @@
 * @param {*} filePath
 */
 const fs = require('fs');
+const continent = require('./continent');
+// console.log(continent.countries[0].country);
 
-const continent = [['Argentina', 'South America'], ['Australia', 'Oceania'], ['Brazil', 'South America'], ['Canada', 'North America'], ['China', 'Asia'], ['France', 'Europe'], ['Germany', 'Europe'], ['India', 'Asia'], ['Indonesia', 'Asia'], ['Italy', 'Europe'], ['Japan', 'Asia'], ['Mexico', 'North America'], ['Russia', 'Asia'], ['Saudi Arabia', 'Asia'], ['South Africa', 'Africa'], ['Turkey', 'Asia'], ['United Kingdom', 'Europe'], ['USA', 'North America'], ['Republic of Korea', 'Asia']];
-
-function csvjson(data) {
+async function csvtojson(data) {
   const dataarr = data.replace('"', '').split('\n');
   const result = [];
 
@@ -32,13 +32,38 @@ const final = {
   Africa: { GDP_2012: 0, POPULATION_2012: 0 },
 };
 
-const aggregate = (filePath) => {
-  const data = fs.readFileSync(filePath, 'utf8');
-  const resobj = csvjson(data);
+async function readFileAsync(filePath) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, 'utf8', (err, datavar) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(datavar);
+      }
+    });
+  });
+}
+
+async function writeFileAsync(writepath, stringwrite) {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(writepath, stringwrite, 'utf8', (err, datavar) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(datavar);
+      }
+    });
+  });
+}
+
+
+const aggregate = async (filePath) => {
+  const data = await readFileAsync(filePath);
+  const resobj = await csvtojson(data);
   for (let i = 0; i < resobj.length; i += 1) {
-    for (let j = 0; j < continent.length; j += 1) {
-      if (resobj[i]['Country Name"'] === continent[j][0]) {
-        const continentmap = continent[j][1];
+    for (let j = 0; j < continent.countries.length; j += 1) {
+      if (resobj[i]['Country Name"'] === continent.countries[j].country) {
+        const continentmap = continent.countries[j].continent;
         if (continentmap === 'South America') {
           const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
           final['South America'].GDP_2012 += gdp;
@@ -78,7 +103,10 @@ const aggregate = (filePath) => {
       }
     }
   }
-  fs.writeFileSync('./output/output.json', JSON.stringify(final));
+  // console.log(final);
+  await writeFileAsync('./output/output.json', JSON.stringify(final));
 };
+
+// aggregate('./data/datafile.csv');
 
 module.exports = aggregate;
