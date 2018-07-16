@@ -3,21 +3,10 @@
 * @param {*} filePath
 */
 const fs = require('fs');
-const continent = require('./continent');
 // This function converts csv to json array of objects.
 async function csvtojson(data) {
   const dataarr = data.replace('"', '').split('\n');
-  const result = [];
-  const headers = dataarr[0].split(',');
-  for (let i = 1; i < dataarr.length; i += 1) {
-    const obj = {};
-    const currentline = dataarr[i].replace('"', '').split('",');
-    for (let j = 0; j < headers.length; j += 1) {
-      obj[headers[j]] = currentline[j];
-    }
-    result.push(obj);
-  }
-  return result;
+  return dataarr;
 }
 
 const final = {
@@ -53,26 +42,21 @@ async function writeFileAsync(writepath, stringwrite) {
   });
 }
 
-async function calcgdp(gdp, continentname) {
-  final[continentname].GDP_2012 += gdp;
-}
-
-async function calcpopulation(Population, continentname) {
-  final[continentname].POPULATION_2012 += Population;
-}
-
 const aggregate = async (filePath) => {
-  const data = await readFileAsync(filePath);
-  const resobj = await csvtojson(data);
-  for (let i = 0; i < resobj.length; i += 1) {
-    for (let j = 0; j < continent.countries.length; j += 1) {
-      if (resobj[i]['Country Name"'] === continent.countries[j].country) {
-        const continentmap = continent.countries[j].continent;
-        calcgdp(parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', '')), continentmap);
-        calcpopulation(parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', '')), continentmap);
-      }
+  const csv = await readFileAsync(filePath);
+  const dataarr = await csvtojson(csv);
+  const json = await readFileAsync('./continent.json');
+  const jsonobj = JSON.parse(json);
+  dataarr.forEach((country) => {
+    const indexofpopulation = country.replace(/"/g,'').split(',')[4];
+    const indexofgdp = country.replace(/"/g,'').split(',')[7];
+    const indexofcountry = country.replace(/"/g,'').split(',')[0];
+    const continent = jsonobj[indexofcountry];
+    if (continent !== undefined) {
+      final[continent].POPULATION_2012 += parseFloat(indexofpopulation);
+      final[continent].GDP_2012 += parseFloat(indexofgdp);
     }
-  }
+  });
   // console.log(final);
   await writeFileAsync('./output/output.json', JSON.stringify(final));
 };

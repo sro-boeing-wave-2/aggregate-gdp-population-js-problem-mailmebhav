@@ -1,80 +1,23 @@
-const continents = {
-  countries: [{
-    country: 'Argentina',
-    continent: 'South America',
-  },
-  {
-    country: 'Australia',
-    continent: 'Oceania',
-  },
-  {
-    country: 'Brazil',
-    continent: 'South America',
-  },
-  {
-    country: 'Canada',
-    continent: 'North America',
-  },
-  {
-    country: 'China',
-    continent: 'Asia',
-  },
-  {
-    country: 'France',
-    continent: 'Europe',
-  },
-  {
-    country: 'Germany',
-    continent: 'Europe',
-  },
-  {
-    country: 'India',
-    continent: 'Asia',
-  },
-  {
-    country: 'Indonesia',
-    continent: 'Asia',
-  },
-  {
-    country: 'Italy',
-    continent: 'Europe',
-  },
-  {
-    country: 'Japan',
-    continent: 'Asia',
-  },
-  {
-    country: 'Mexico',
-    continent: 'North America',
-  },
-  {
-    country: 'Russia',
-    continent: 'Asia',
-  },
-  {
-    country: 'Saudi Arabia',
-    continent: 'Asia',
-  },
-  {
-    country: 'South Africa',
-    continent: 'Africa',
-  },
-  {
-    country: 'Turkey',
-    continent: 'Asia',
-  },
-  {
-    country: 'United Kingdom',
-    continent: 'Europe',
-  },
-  {
-    country: 'USA',
-    continent: 'North America',
-  },
-  {
-    country: 'Republic of Korea',
-    continent: 'Asia',
-  }],
+const continent = {
+  Argentina: 'South America',
+  Australia: 'Oceania',
+  Brazil: 'South America',
+  Canada: 'North America',
+  China: 'Asia',
+  France: 'Europe',
+  Germany: 'Europe',
+  India: 'Asia',
+  Indonesia: 'Asia',
+  Italy: 'Europe',
+  Japan: 'Asia',
+  Mexico: 'North America',
+  Russia: 'Asia',
+  'Saudi Arabia': 'Asia',
+  'South Africa': 'Africa',
+  Turkey: 'Asia',
+  'United Kingdom': 'Europe',
+  USA: 'North America',
+  'Republic of Korea': 'Asia',
 };
 
-module.exports = continents;
+module.exports = continent;
