@@ -5,7 +5,7 @@
 const fs = require('fs');
 const continent = require('./continent');
 // console.log(continent.countries[0].country);
-
+// This function converts csv to json array of objects.
 async function csvtojson(data) {
   const dataarr = data.replace('"', '').split('\n');
   const result = [];
