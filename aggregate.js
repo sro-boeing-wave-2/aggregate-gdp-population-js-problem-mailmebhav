@@ -4,14 +4,11 @@
 */
 const fs = require('fs');
 const continent = require('./continent');
-// console.log(continent.countries[0].country);
 // This function converts csv to json array of objects.
 async function csvtojson(data) {
   const dataarr = data.replace('"', '').split('\n');
   const result = [];
-
   const headers = dataarr[0].split(',');
-
   for (let i = 1; i < dataarr.length; i += 1) {
     const obj = {};
     const currentline = dataarr[i].replace('"', '').split('",');
@@ -56,6 +53,13 @@ async function writeFileAsync(writepath, stringwrite) {
   });
 }
 
+async function calcgdp(gdp, continentname) {
+  final[continentname].GDP_2012 += gdp;
+}
+
+async function calcpopulation(Population, continentname) {
+  final[continentname].POPULATION_2012 += Population;
+}
 
 const aggregate = async (filePath) => {
   const data = await readFileAsync(filePath);
@@ -64,49 +68,14 @@ const aggregate = async (filePath) => {
     for (let j = 0; j < continent.countries.length; j += 1) {
       if (resobj[i]['Country Name"'] === continent.countries[j].country) {
         const continentmap = continent.countries[j].continent;
-        if (continentmap === 'South America') {
-          const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
-          final['South America'].GDP_2012 += gdp;
-          const populate = parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', ''));
-          final['South America'].POPULATION_2012 += populate;
-        }
-        if (continentmap === 'Oceania') {
-          const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
-          final.Oceania.GDP_2012 += gdp;
-          const populate = parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', ''));
-          final.Oceania.POPULATION_2012 += populate;
-        }
-        if (continentmap === 'North America') {
-          const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
-          final['North America'].GDP_2012 += gdp;
-          const populate = parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', ''));
-          final['North America'].POPULATION_2012 += populate;
-        }
-        if (continentmap === 'Asia') {
-          const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
-          final.Asia.GDP_2012 += gdp;
-          const populate = parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', ''));
-          final.Asia.POPULATION_2012 += populate;
-        }
-        if (continentmap === 'Europe') {
-          const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
-          final.Europe.GDP_2012 += gdp;
-          const populate = parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', ''));
-          final.Europe.POPULATION_2012 += populate;
-        }
-        if (continentmap === 'Africa') {
-          const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
-          final.Africa.GDP_2012 += gdp;
-          const populate = parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', ''));
-          final.Africa.POPULATION_2012 += populate;
-        }
+        calcgdp(parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', '')), continentmap);
+        calcpopulation(parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', '')), continentmap);
       }
     }
   }
   // console.log(final);
   await writeFileAsync('./output/output.json', JSON.stringify(final));
 };
-
 // aggregate('./data/datafile.csv');
 
 module.exports = aggregate;

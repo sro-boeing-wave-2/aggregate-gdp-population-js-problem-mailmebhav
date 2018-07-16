@@ -20,16 +20,17 @@ async function csvtojson(data) {
     }
     result.push(obj);
   }
+  // console.log(result);
   return result;
 }
 
 const final = {
-  'South America': { GDP_2012: 0, POPULATION_2012: 0 },
-  Oceania: { GDP_2012: 0, POPULATION_2012: 0 },
-  'North America': { GDP_2012: 0, POPULATION_2012: 0 },
-  Asia: { GDP_2012: 0, POPULATION_2012: 0 },
-  Europe: { GDP_2012: 0, POPULATION_2012: 0 },
-  Africa: { GDP_2012: 0, POPULATION_2012: 0 },
+  'South America': { GDP: 0, POPULATION: 0 },
+  Oceania: { GDP: 0, POPULATION: 0 },
+  'North America': { GDP: 0, POPULATION: 0 },
+  Asia: { GDP: 0, POPULATION: 0 },
+  Europe: { GDP: 0, POPULATION: 0 },
+  Africa: { GDP: 0, POPULATION: 0 },
 };
 
 async function readFileAsync(filePath) {
@@ -56,57 +57,30 @@ async function writeFileAsync(writepath, stringwrite) {
   });
 }
 
+async function calcgdp(gdp2012, gdp2015, continentname) {
+  final[continentname].GDP += gdp2012 + gdp2015;
+}
 
-const aggregate = async (filePath) => {
+async function calcpopulation(population2012, population2015, continentname) {
+  final[continentname].POPULATION += population2012 + population2015;
+}
+
+const aggregate2015 = async (filePath) => {
   const data = await readFileAsync(filePath);
   const resobj = await csvtojson(data);
   for (let i = 0; i < resobj.length; i += 1) {
     for (let j = 0; j < continent.countries.length; j += 1) {
       if (resobj[i]['Country Name"'] === continent.countries[j].country) {
         const continentmap = continent.countries[j].continent;
-        if (continentmap === 'South America') {
-          const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
-          final['South America'].GDP_2012 += gdp;
-          const populate = parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', ''));
-          final['South America'].POPULATION_2012 += populate;
-        }
-        if (continentmap === 'Oceania') {
-          const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
-          final.Oceania.GDP_2012 += gdp;
-          const populate = parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', ''));
-          final.Oceania.POPULATION_2012 += populate;
-        }
-        if (continentmap === 'North America') {
-          const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
-          final['North America'].GDP_2012 += gdp;
-          const populate = parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', ''));
-          final['North America'].POPULATION_2012 += populate;
-        }
-        if (continentmap === 'Asia') {
-          const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
-          final.Asia.GDP_2012 += gdp;
-          const populate = parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', ''));
-          final.Asia.POPULATION_2012 += populate;
-        }
-        if (continentmap === 'Europe') {
-          const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
-          final.Europe.GDP_2012 += gdp;
-          const populate = parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', ''));
-          final.Europe.POPULATION_2012 += populate;
-        }
-        if (continentmap === 'Africa') {
-          const gdp = parseFloat((resobj[i]['"GDP Billions (US Dollar) - 2012"']).replace('"', ''));
-          final.Africa.GDP_2012 += gdp;
-          const populate = parseFloat((resobj[i]['"Population (Millions) - 2012"']).replace('"', ''));
-          final.Africa.POPULATION_2012 += populate;
-        }
+        calcgdp(parseFloat((resobj[i]['"GDP Billions (USD) 2012"']).replace('"', '')), parseFloat((resobj[i]['"GDP Billions (USD) 2015"']).replace('"', '')), continentmap);
+        calcpopulation(parseFloat((resobj[i]['"Population (Millions) 2012"']).replace('"', '')), parseFloat((resobj[i]['"Population (Millions) 2015"']).replace('"', '')), continentmap);
       }
     }
   }
-  // console.log(final);
-  await writeFileAsync('./output/output.json', JSON.stringify(final));
+  console.log(final);
+  await writeFileAsync('./output/output2015.json', JSON.stringify(final));
 };
 
-// aggregate('./data/datafile.csv');
+aggregate2015('./data/datafile 2015.csv');
 
-module.exports = aggregate;
+module.exports = aggregate2015;
