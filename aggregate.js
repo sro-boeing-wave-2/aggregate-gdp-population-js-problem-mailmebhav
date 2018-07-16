@@ -5,7 +5,7 @@
 const fs = require('fs');
 const continent = require('./continent');
 // This function converts csv to json array of objects.
-async function csvtojson(data) {
+function csvtojson(data) {
   const dataarr = data.replace('"', '').split('\n');
   const result = [];
   const headers = dataarr[0].split(',');
@@ -29,7 +29,7 @@ const final = {
   Africa: { GDP_2012: 0, POPULATION_2012: 0 },
 };
 
-async function readFileAsync(filePath) {
+function readFileAsync(filePath) {
   return new Promise((resolve, reject) => {
     fs.readFile(filePath, 'utf8', (err, datavar) => {
       if (err) {
@@ -41,7 +41,7 @@ async function readFileAsync(filePath) {
   });
 }
 
-async function writeFileAsync(writepath, stringwrite) {
+function writeFileAsync(writepath, stringwrite) {
   return new Promise((resolve, reject) => {
     fs.writeFile(writepath, stringwrite, 'utf8', (err, datavar) => {
       if (err) {
@@ -53,11 +53,11 @@ async function writeFileAsync(writepath, stringwrite) {
   });
 }
 
-async function calcgdp(gdp, continentname) {
+function calcgdp(gdp, continentname) {
   final[continentname].GDP_2012 += gdp;
 }
 
-async function calcpopulation(Population, continentname) {
+function calcpopulation(Population, continentname) {
   final[continentname].POPULATION_2012 += Population;
 }
 
