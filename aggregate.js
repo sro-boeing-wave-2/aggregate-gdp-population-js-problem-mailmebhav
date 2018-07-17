@@ -4,10 +4,6 @@
 */
 const fs = require('fs');
 // This function converts csv to json array of objects.
-async function csvtojson(data) {
-  const dataarr = data.replace('"', '').split('\n');
-  return dataarr;
-}
 
 const final = {
   'South America': { GDP_2012: 0, POPULATION_2012: 0 },
@@ -42,23 +38,25 @@ async function writeFileAsync(writepath, stringwrite) {
   });
 }
 
-const aggregate = async (filePath) => {
-  const csv = await readFileAsync(filePath);
-  const dataarr = await csvtojson(csv);
-  const json = await readFileAsync('./continent.json');
-  const jsonobj = JSON.parse(json);
-  dataarr.forEach((country) => {
-    const indexofpopulation = country.replace(/"/g,'').split(',')[4];
-    const indexofgdp = country.replace(/"/g,'').split(',')[7];
-    const indexofcountry = country.replace(/"/g,'').split(',')[0];
-    const continent = jsonobj[indexofcountry];
-    if (continent !== undefined) {
-      final[continent].POPULATION_2012 += parseFloat(indexofpopulation);
-      final[continent].GDP_2012 += parseFloat(indexofgdp);
-    }
+const aggregate = (filePath) => {
+  Promise.all([readFileAsync(filePath), readFileAsync('./continent.json')]).then((values) => {
+    const csv = values[0];
+    const dataarr = csv.replace('"', '').split('\n');
+    const json = values[1];
+    const jsonobj = JSON.parse(json);
+    dataarr.forEach((country) => {
+      const indexofpopulation = country.replace(/"/g,'').split(',')[4];
+      const indexofgdp = country.replace(/"/g,'').split(',')[7];
+      const indexofcountry = country.replace(/"/g,'').split(',')[0];
+      const continent = jsonobj[indexofcountry];
+      if (continent !== undefined) {
+        final[continent].POPULATION_2012 += parseFloat(indexofpopulation);
+        final[continent].GDP_2012 += parseFloat(indexofgdp);
+      }
+    });
+    // console.log(final);
+    writeFileAsync('./output/output.json', JSON.stringify(final));
   });
-  // console.log(final);
-  await writeFileAsync('./output/output.json', JSON.stringify(final));
 };
 // aggregate('./data/datafile.csv');
 
