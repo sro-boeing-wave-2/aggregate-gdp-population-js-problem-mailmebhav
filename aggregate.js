@@ -26,18 +26,6 @@ async function readFileAsync(filePath) {
   });
 }
 
-async function writeFileAsync(writepath, stringwrite) {
-  return new Promise((resolve, reject) => {
-    fs.writeFile(writepath, stringwrite, 'utf8', (err, datavar) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(datavar);
-      }
-    });
-  });
-}
-
 const aggregate = (filePath) => {
   Promise.all([readFileAsync(filePath), readFileAsync('./continent.json')]).then((values) => {
     const csv = values[0];
@@ -45,17 +33,23 @@ const aggregate = (filePath) => {
     const json = values[1];
     const jsonobj = JSON.parse(json);
     dataarr.forEach((country) => {
-      const indexofpopulation = country.replace(/"/g,'').split(',')[4];
-      const indexofgdp = country.replace(/"/g,'').split(',')[7];
-      const indexofcountry = country.replace(/"/g,'').split(',')[0];
+      const indexofpopulation = country.replace(/"/g, '').split(',')[4];
+      const indexofgdp = country.replace(/"/g, '').split(',')[7];
+      const indexofcountry = country.replace(/"/g, '').split(',')[0];
       const continent = jsonobj[indexofcountry];
       if (continent !== undefined) {
         final[continent].POPULATION_2012 += parseFloat(indexofpopulation);
         final[continent].GDP_2012 += parseFloat(indexofgdp);
       }
     });
+    const writepath = './output/output.json';
+    const stringwrite = JSON.stringify(final);
+    fs.writeFile(writepath, stringwrite, 'utf8', (err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
     // console.log(final);
-    writeFileAsync('./output/output.json', JSON.stringify(final));
   });
 };
 // aggregate('./data/datafile.csv');
